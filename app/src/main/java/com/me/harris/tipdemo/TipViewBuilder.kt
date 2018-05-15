@@ -25,7 +25,7 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
 
 
 //    private val anchor: View? = null
-    private var tip: SimpleTipView? = null
+    private var tip: TipView? = null
 
     var layoutRule: Int = RelativeLayout.ABOVE //上下左右都支持
     private val wm: WindowManager by lazy {
@@ -39,6 +39,7 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
     }
 
 
+    //设置箭头的偏移量
     fun arrowOffset(offset:Int): TipViewBuilder {
         this.arrowOffset = offset
         return this
@@ -69,7 +70,7 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
 
     fun setContent(str: String) {
         content = str
-        tip = SimpleTipView(ctx).apply {
+        tip = TipView(ctx).apply {
             setText(str)
         }
     }
@@ -98,12 +99,14 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
             setContent(content!!)
         }
 
-        (tip as SimpleTipView)
+        (tip as TipView)
                 .apply {
                     tipBackGroundColor(backGroundColor)
                     addLayoutRule(this@TipViewBuilder.layoutRule)
                     tipTextColor(this@TipViewBuilder.textColor)
-                    arrowOffset(this@TipViewBuilder.arrowOffset)
+                    if (this@TipViewBuilder.arrowOffset>0){
+                        arrowOffset(this@TipViewBuilder.arrowOffset)
+                    }
                     anchor(anchor)
                     anchor.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
                         //  Log.d("TipViewBuilder", "anchor change")
@@ -128,10 +131,12 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
         return this
     }
 
+    var center_horizontal = true
+
 
     private fun params(): WindowManager.LayoutParams {
         val anchorSize = calanchorPosition() //锚点的左上角相对于屏幕的位置
-        val selfSize = (tip as SimpleTipView).calculateMeasureSize() //控件自己占据的宽度和高度
+        val selfSize = (tip as TipView).calculateMeasureSize() //控件自己占据的宽度和高度
         val lp = WindowManager.LayoutParams()
         lp.width = selfSize[0] //控件自己想要的宽度
         lp.height = selfSize[1] //控件自己想要的高度
@@ -145,12 +150,20 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
         when(layoutRule){
 
             RelativeLayout.ABOVE -> {
-                lp.x = anchorSize[0]+anchor.measuredWidth/2-lp.width/2 //默认对齐
-                lp.y = (anchorSize[1]-lp.height)+(tip as SimpleTipView).verticalPadding()
+                if (center_horizontal){
+                    lp.x = (ctx.screenWidth()-selfSize[0])/2
+                }else{
+                    lp.x = anchorSize[0]+anchor.measuredWidth/2-lp.width/2 //默认对齐
+                }
+                lp.y = (anchorSize[1]-lp.height)+(tip as TipView).verticalPadding()
             }
 
             RelativeLayout.BELOW -> {
-                lp.x = anchorSize[0]+anchor.measuredWidth/2-lp.width/2 //默认对齐
+                if (center_horizontal){ //在屏幕中间
+                    lp.x = (ctx.screenWidth()-selfSize[0])/2
+                }else {
+                    lp.x = anchorSize[0]+anchor.measuredWidth/2-lp.width/2 //默认对齐
+                }
                 lp.y = anchorSize[1]+anchor.measuredHeight//在锚点下方
             }
 

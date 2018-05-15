@@ -9,15 +9,14 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout
 
-class SimpleTipView : View {
+
+
+class TipView : View {
 
     constructor(ctx: Context) : super(ctx)
     constructor(ctx: Context, attributes: AttributeSet?) : super(ctx, attributes)
 
-    // val ARROW_TOP_LEFT = 0X000001
-    // val ARROW_TOP_RIGHT = 0X000010
-    // val ARROW_BOTTOM_LEFT = 0X000100
-    // val ARROW_BOTTOM_RIGHT = 0X001000
+
 
 
     private var arrow_height = 20 // 箭头的高度
@@ -91,6 +90,10 @@ class SimpleTipView : View {
         context.dip2px(10f).toFloat()
     }
 
+    val verticalPadding by lazy {
+        context.dip2px(2f).toFloat()
+    }
+
     val maxContentWidth by lazy {
         context.screenWidth()/2
     }
@@ -123,7 +126,7 @@ class SimpleTipView : View {
                         true)
                 val txtRawHeight = (layout as StaticLayout).height.toFloat()
                 return  intArrayOf((txtRawWidth + padding * 2 + dx * 2 + shadowRadius * 2).toInt(),
-                        (txtRawHeight + padding * 2 + arrow_height + dy * 2 + shadowRadius * 2).toInt())
+                        (txtRawHeight + verticalPadding * 2 + arrow_height + dy * 2 + shadowRadius * 2).toInt())
 
             }
             RelativeLayout.LEFT_OF -> {
@@ -211,21 +214,22 @@ class SimpleTipView : View {
         this.arrowOffset= offset
     }
 
-    //箭头相对于画布左上角的偏移量
+    //箭头相对于画布左上角的偏移量,如果不设置的话，默认指向锚点的中心
     private fun calculateArrowOffset(): Int {
 //        anchor?.let {
-//            val arr = IntArray(2)
-//            it.getLocationOnScreen(arr)
             if (this.arrowOffset>0) {
                 return arrowOffset
             }
             val size = calculateMeasureSize()
             when (layoutRule) {
                 RelativeLayout.BELOW -> {
-                    return (size[0]-arrow_width)/2
+//                    return (size[0]-arrow_width)/2
+                    val arrowAbsPosition = (anchor!!.left+ anchor!!.right)/2 //箭头相对于屏幕左侧的绝对距离
+                    return arrowAbsPosition-(context.screenWidth()-measuredWidth)/2
                 }
                 RelativeLayout.ABOVE -> {
-                    return  (size[0]-arrow_width)/2
+                    val arrowAbsPosition = (anchor!!.left+ anchor!!.right)/2 //箭头相对于屏幕左侧的绝对距离
+                    return arrowAbsPosition-(context.screenWidth()-measuredWidth)/2
                 }
                 RelativeLayout.LEFT_OF -> {
                     return   (size[1]-arrow_width)/2
@@ -236,6 +240,9 @@ class SimpleTipView : View {
         }
         return 0
     }
+
+
+
 
 
 
@@ -296,13 +303,7 @@ class SimpleTipView : View {
             }
         }
         pathRect.addRoundRect(roundRect, rectRadius, rectRadius, Path.Direction.CCW)
-//        path.moveTo(arrowOffset + dx + width / 2 + arrow_height, dy + height)
-//
-//        path.lineTo(arrowOffset + dx + width / 2, dy + height + arrow_height)
-//
-//        path.lineTo(arrowOffset + dx + width / 2 - arrow_height, dy + height)
-//
-////        path.lineTo(dy, height)
+
 
 
 
@@ -319,11 +320,10 @@ class SimpleTipView : View {
 
         when(layoutRule){
             RelativeLayout.ABOVE-> {
-             canvas.translate(padding, padding-arrow_height)
-
+             canvas.translate(padding, padding-arrow_height/4)
             }
             RelativeLayout.BELOW -> {
-              canvas.translate(padding, padding+arrow_height)
+              canvas.translate(padding, padding+arrow_height/4)
 
             }
             RelativeLayout.LEFT_OF -> {
