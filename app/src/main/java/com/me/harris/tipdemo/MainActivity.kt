@@ -29,8 +29,8 @@ class MainActivity : AppCompatActivity() {
         Looper.myQueue().addIdleHandler {
             tipViewBuilder = TipViewBuilder.
                     Companion.
-                    make(this,"添加后有月、季度、年、永久等多个付费档供成员选择",button)
-                    .addRule(RelativeLayout.ABOVE)
+                    make(this,"添加后有月、季度、年、永久等多个付费档供成员选择",button3)
+                    .addRule(RelativeLayout.BELOW)
                     .textColor(Color.WHITE)
                     .backGroundColor(Color.BLUE)
                     .show()

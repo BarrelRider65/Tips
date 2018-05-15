@@ -120,8 +120,8 @@ class TipView : View  {
                         1.1f, 1.0f,
                         true)
                 val txtRawHeight = (layout as StaticLayout).height.toFloat()
-               return intArrayOf((txtRawWidth + padding * 2 + dx * 2 + shadowRadius * 2).toInt(),
-                        (txtRawHeight + padding * 2 + arrow_height + dy * 2 + shadowRadius * 2).toInt())
+                return intArrayOf((txtRawWidth + padding * 2 + dx * 2 + shadowRadius * 2).toInt(),
+                        (txtRawHeight + verticalPadding * 2 + arrow_height + dy * 2 + shadowRadius * 2).toInt())
             }
 
             RelativeLayout.BELOW -> {
@@ -189,9 +189,7 @@ class TipView : View  {
 
     }
 
-    fun verticalPadding():Int{
-        return (padding+dy+shadowRadius).toInt()
-    }
+
 
 
     fun tipTextColor(color:Int){
@@ -284,11 +282,13 @@ class TipView : View  {
         pathRect.reset()    //圆角矩形的path
 
         when (layoutRule){
+
             RelativeLayout.LEFT_OF ->{
                 height = measuredHeight.toFloat()-dy*2-shadowRadius*2
                 width = measuredWidth.toFloat()-dx*2-shadowRadius*2-arrow_height
                 roundRect.set(left.toFloat()-padding,dy,dx+measuredWidth-arrow_height,dy+height)
             }
+
             RelativeLayout.BELOW -> {
              height = measuredHeight.toFloat()-dy*2-shadowRadius*2-arrow_height
              width = measuredWidth.toFloat()-dx*2-shadowRadius*2
@@ -297,14 +297,16 @@ class TipView : View  {
               path.lineTo(dx+arrowOffset+arrow_width/2,dy)
               path.lineTo(dx+arrowOffset+arrow_width,dy+arrow_height)
             }
+
             RelativeLayout.ABOVE -> {
-             height = measuredHeight.toFloat()-dy*2-shadowRadius*2-arrow_height
+             height = measuredHeight.toFloat()-dy*2-shadowRadius*2-arrow_height//算上verticalPadding*2+textRawHeight
              width = measuredWidth.toFloat()-dx*2-shadowRadius*2
-                roundRect.set(dx, dy,dx+width,dy+height-arrow_height)
-              path.moveTo(dx+arrowOffset, (height-arrow_height))
-              path.lineTo(dx+arrowOffset+arrow_width/2, height)
-              path.lineTo(dx+arrowOffset+arrow_width, (height-arrow_height))
+                roundRect.set(dx, dy+shadowRadius,dx+width,dy+height+shadowRadius)
+              path.moveTo(dx+arrowOffset, ((measuredHeight-arrow_height-verticalPadding-dy*2-shadowRadius*2).toFloat()))
+              path.lineTo(dx+arrowOffset+arrow_width/2, measuredHeight.toFloat())
+              path.lineTo(dx+arrowOffset+arrow_width, ((measuredHeight-arrow_height-verticalPadding-dy*2-shadowRadius*2).toFloat()))
             }
+
             RelativeLayout.RIGHT_OF -> {
                  height = measuredHeight.toFloat()-dy*2-shadowRadius*2
                  width = measuredWidth.toFloat()-dx*2-shadowRadius*2-arrow_height
@@ -312,12 +314,7 @@ class TipView : View  {
             }
         }
         pathRect.addRoundRect(roundRect, rectRadius, rectRadius, Path.Direction.CCW)
-
-
-
-
         path.close()
-//
         path.op(pathRect, Path.Op.UNION)
        
         canvas.drawPath(path, paint)
@@ -329,11 +326,11 @@ class TipView : View  {
 
         when(layoutRule){
             RelativeLayout.ABOVE-> {
-             canvas.translate(padding, padding-arrow_height/2)
+             canvas.translate(padding, verticalPadding+shadowRadius)
             }
             RelativeLayout.BELOW -> {
-              canvas.translate(padding, padding+arrow_height/4)
-
+//              canvas.translate(padding, padding+arrow_height/4)
+                canvas.translate(padding, arrow_height.toFloat()+verticalPadding)
             }
             RelativeLayout.LEFT_OF -> {
               canvas.translate(padding-arrow_height,padding)

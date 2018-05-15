@@ -153,7 +153,7 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
                 }else{
                     lp.x = anchorSize[0]+anchor.measuredWidth/2-lp.width/2 //默认对齐
                 }
-                lp.y = (anchorSize[1]-lp.height)+(tip as TipView).verticalPadding()
+                lp.y = ((anchorSize[1]-lp.height)+(tip as TipView).verticalPadding).toInt()
             }
 
             RelativeLayout.BELOW -> {
