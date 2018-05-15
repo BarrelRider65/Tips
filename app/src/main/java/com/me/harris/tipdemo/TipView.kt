@@ -109,7 +109,7 @@ class TipView : View  {
         val txtRawWidth = textPaint.measureText(content.toString())// 文字的宽度
 
        var array = IntArray(2)
-        anchor!!.getLocationOnScreen(array)
+        anchor.getLocationOnScreen(array)
         val remainingWidth:Int
         when(layoutRule) {
 
@@ -329,7 +329,7 @@ class TipView : View  {
 
         when(layoutRule){
             RelativeLayout.ABOVE-> {
-             canvas.translate(padding, padding-arrow_height/4)
+             canvas.translate(padding, padding-arrow_height/2)
             }
             RelativeLayout.BELOW -> {
               canvas.translate(padding, padding+arrow_height/4)
