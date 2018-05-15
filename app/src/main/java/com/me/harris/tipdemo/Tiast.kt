@@ -123,7 +123,7 @@ class Tiast(val ctx: Context,val anchor:View) {
 
     private fun params(): WindowManager.LayoutParams {
         val anchorSize = calanchorPosition() //锚点的左上角相对于屏幕的位置
-        val selfSize = (tip as SimpleTipView).calculateTipSize() //控件自己占据的宽度和高度
+        val selfSize = (tip as SimpleTipView).calculateMeasureSize() //控件自己占据的宽度和高度
         val lp = WindowManager.LayoutParams()
         lp.width = selfSize[0] //控件自己想要的宽度
         lp.height = selfSize[1] //控件自己想要的高度

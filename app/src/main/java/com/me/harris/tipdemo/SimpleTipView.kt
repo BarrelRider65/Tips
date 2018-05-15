@@ -95,42 +95,90 @@ class SimpleTipView : View {
         context.screenWidth()/2
     }
 
-    fun calculateTipSize(): IntArray {
-
-
+    //计算实际需要的宽高
+    fun calculateMeasureSize(): IntArray {
 
         val txtRawWidth = textPaint.measureText(content.toString())// 文字的宽度
 
-//        txtWidth = matchChoose(minWidth, maxWidth, txtWidth.toInt()).toFloat()
+       var array = IntArray(2)
+        anchor!!.getLocationOnScreen(array)
+        val remainingWidth:Int
+        when(layoutRule) {
 
-        layout = StaticLayout(content, textPaint, txtRawWidth.toInt(),
-                Layout.Alignment.ALIGN_NORMAL,
-                1.1f, 1.0f,
-                true)
+            RelativeLayout.ABOVE
+                    -> {
+                layout = StaticLayout(content, textPaint, txtRawWidth.toInt(),
+                        Layout.Alignment.ALIGN_NORMAL,
+                        1.1f, 1.0f,
+                        true)
+                val txtRawHeight = (layout as StaticLayout).height.toFloat()
+               return intArrayOf((txtRawWidth + padding * 2 + dx * 2 + shadowRadius * 2).toInt(),
+                        (txtRawHeight + padding * 2 + arrow_height + dy * 2 + shadowRadius * 2).toInt())
+            }
 
-//        layout = StaticLayout(content,textPaint,maxContentWidth
-//        ,Layout.Alignment.ALIGN_NORMAL,
-//                1.1f,1.0f,true)
-
-
-        val txtRawHeight = Math.max(minHeight.toFloat(), (layout as StaticLayout).height.toFloat())
-
-        return when(layoutRule){
-            RelativeLayout.BELOW  ->         // Tip在锚点之上或者之下的时候，高度加上箭头高度
-                intArrayOf((txtRawWidth + padding * 2 + dx * 2 + shadowRadius * 2).toInt(),
+            RelativeLayout.BELOW -> {
+                layout = StaticLayout(content, textPaint, txtRawWidth.toInt(),
+                        Layout.Alignment.ALIGN_NORMAL,
+                        1.1f, 1.0f,
+                        true)
+                val txtRawHeight = (layout as StaticLayout).height.toFloat()
+                return  intArrayOf((txtRawWidth + padding * 2 + dx * 2 + shadowRadius * 2).toInt(),
                         (txtRawHeight + padding * 2 + arrow_height + dy * 2 + shadowRadius * 2).toInt())
 
-            RelativeLayout.ABOVE  ->
-                     intArrayOf((txtRawWidth + padding * 2 + dx * 2 + shadowRadius * 2).toInt(),
-                             (txtRawHeight + padding * 2 + arrow_height + dy * 2 + shadowRadius * 2).toInt())
-              //Tip在锚点左边或者右边的时候，宽度加上箭头高度 
-            RelativeLayout.LEFT_OF ->
-                   intArrayOf((txtRawWidth + padding * 2 + dx * 2 +arrow_height+ shadowRadius * 2).toInt(),
-                           (txtRawHeight + padding * 2+ dy * 2 + shadowRadius * 2).toInt())
-            else ->
-                intArrayOf((txtRawWidth + padding * 2 + dx * 2 +arrow_height+ shadowRadius * 2).toInt(),
-                        (txtRawHeight + padding * 2+ dy * 2 + shadowRadius * 2).toInt())
+            }
+            RelativeLayout.LEFT_OF -> {
+                remainingWidth = array[0]
+                val exceeedingLimit:Boolean
+                if (txtRawWidth>remainingWidth- padding * 2 - dx * 2 -arrow_height- shadowRadius * 2){ //文字长度一行放不下
+                    exceeedingLimit = true
+                    layout = StaticLayout(content,textPaint,remainingWidth
+                            ,Layout.Alignment.ALIGN_NORMAL,
+                            1.1f,1.0f,true) //气泡在锚点左右侧的时候，最大宽度限定为距离锚点距离屏幕左侧的距离
+                }else {
+                    exceeedingLimit = false
+                    layout = StaticLayout(content, textPaint, txtRawWidth.toInt(),
+                            Layout.Alignment.ALIGN_NORMAL,
+                            1.1f, 1.0f,
+                            true) //一行摆得下
+                }
+                val txtRawHeight = (layout as StaticLayout).height.toFloat()
+                if (exceeedingLimit){
+                    return intArrayOf((remainingWidth ),
+                            (txtRawHeight + padding * 2+ dy * 2 + shadowRadius * 2).toInt())
+                }else {
+                    return intArrayOf((txtRawWidth + padding * 2 + dx * 2 +arrow_height+ shadowRadius * 2).toInt(),
+                            (txtRawHeight + padding * 2+ dy * 2 + shadowRadius * 2).toInt())
+                }
+
+            }
+            else -> {
+                remainingWidth = context.screenWidth()-array[0]- anchor!!.measuredWidth
+                val exceeedingLimit:Boolean
+                if (txtRawWidth>remainingWidth-padding * 2 - dx * 2 -arrow_height- shadowRadius * 2){ // 气泡在锚点右侧，剩余的空间已经摆不下了，需要换行
+                    exceeedingLimit = true
+                    layout = StaticLayout(content,textPaint,remainingWidth
+                            ,Layout.Alignment.ALIGN_NORMAL,
+                            1.1f,1.0f,true)
+                }else {
+                    exceeedingLimit = false
+                    layout = StaticLayout(content, textPaint, txtRawWidth.toInt(),
+                            Layout.Alignment.ALIGN_NORMAL,
+                            1.1f, 1.0f,
+                            true)
+                }
+                val txtRawHeight = (layout as StaticLayout).height.toFloat()
+                if (exceeedingLimit){
+                    return  intArrayOf((remainingWidth),
+                            (txtRawHeight + padding * 2+ dy * 2 + shadowRadius * 2).toInt())
+                }else{
+                    return  intArrayOf((txtRawWidth + padding * 2 + dx * 2 +arrow_height+ shadowRadius * 2).toInt(),
+                            (txtRawHeight + padding * 2+ dy * 2 + shadowRadius * 2).toInt())
+                }
+
+
+            }
         }
+
     }
 
     fun verticalPadding():Int{
@@ -171,7 +219,7 @@ class SimpleTipView : View {
             if (this.arrowOffset>0) {
                 return arrowOffset
             }
-            val size = calculateTipSize()
+            val size = calculateMeasureSize()
             when (layoutRule) {
                 RelativeLayout.BELOW -> {
                     return (size[0]-arrow_width)/2
@@ -193,7 +241,7 @@ class SimpleTipView : View {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
 //        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val arr = calculateTipSize()
+        val arr = calculateMeasureSize()
 
 
         val w = MeasureSpec.makeMeasureSpec(arr[0], MeasureSpec.EXACTLY)
@@ -213,8 +261,8 @@ class SimpleTipView : View {
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas!!)
 
-        var height = measuredHeight.toFloat() - arrow_height - dy * 2 - shadowRadius * 2
-        var width = measuredWidth.toFloat() - dx * 2 - shadowRadius * 2
+        var height: Float
+        var width: Float
 
         path.reset()      // 箭头的path
         pathRect.reset()    //圆角矩形的path
