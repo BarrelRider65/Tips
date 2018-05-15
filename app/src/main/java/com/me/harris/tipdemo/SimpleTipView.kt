@@ -34,6 +34,8 @@ class SimpleTipView : View {
     private var maxWidth = 0
     private var minWidth = 0
     private var minHeight = 0
+
+
     val paint = Paint()
     val textPaint= TextPaint(Paint.ANTI_ALIAS_FLAG)
 
@@ -89,6 +91,10 @@ class SimpleTipView : View {
         context.dip2px(10f).toFloat()
     }
 
+    val maxContentWidth by lazy {
+        context.screenWidth()/2
+    }
+
     fun calculateTipSize(): IntArray {
 
 
@@ -97,7 +103,14 @@ class SimpleTipView : View {
 
 //        txtWidth = matchChoose(minWidth, maxWidth, txtWidth.toInt()).toFloat()
 
-        layout = StaticLayout(content, textPaint, txtRawWidth.toInt(), Layout.Alignment.ALIGN_NORMAL, 1.1f, 1.0f, true)
+        layout = StaticLayout(content, textPaint, txtRawWidth.toInt(),
+                Layout.Alignment.ALIGN_NORMAL,
+                1.1f, 1.0f,
+                true)
+
+//        layout = StaticLayout(content,textPaint,maxContentWidth
+//        ,Layout.Alignment.ALIGN_NORMAL,
+//                1.1f,1.0f,true)
 
 
         val txtRawHeight = Math.max(minHeight.toFloat(), (layout as StaticLayout).height.toFloat())
@@ -120,16 +133,10 @@ class SimpleTipView : View {
         }
     }
 
-    fun matchChoose(start: Int, end: Int, num: Int): Int {
-        var s = start
-        var e = end
-        if (s > end) {
-            val tmp = s
-            e = s
-            s = tmp
-        }
-        return Math.max(s, Math.min(num, e))
+    fun verticalPadding():Int{
+        return (padding+dy+shadowRadius).toInt()
     }
+
 
     fun tipTextColor(color:Int){
         this.textColor=color
@@ -165,20 +172,20 @@ class SimpleTipView : View {
                 return arrowOffset
             }
             val size = calculateTipSize()
-            when(layoutRule) {
+            when (layoutRule) {
                 RelativeLayout.BELOW -> {
-                   return (size[0]-arrow_width)/2
+                    return (size[0]-arrow_width)/2
                 }
                 RelativeLayout.ABOVE -> {
-                   return  (size[0]-arrow_width)/2
+                    return  (size[0]-arrow_width)/2
                 }
                 RelativeLayout.LEFT_OF -> {
-                 return   (size[1]-arrow_width)/2
+                    return   (size[1]-arrow_width)/2
                 }
                 RelativeLayout.RIGHT_OF -> {
-                 return   (size[1]-arrow_width)/2
+                    return   (size[1]-arrow_width)/2
                 }
-            }
+        }
         return 0
     }
 
@@ -230,9 +237,9 @@ class SimpleTipView : View {
              height = measuredHeight.toFloat()-dy*2-shadowRadius*2-arrow_height
              width = measuredWidth.toFloat()-dx*2-shadowRadius*2
              roundRect.set(dx,dy-arrow_height,dx+width,dy+height-arrow_height)
-              path.moveTo(dx+arrowOffset,dy+height)
-              path.lineTo(dx+arrowOffset+arrow_width/2,dy-arrow_height+arrow_height)
-              path.lineTo(dx+arrowOffset+arrow_width,dy+arrow_height)
+              path.moveTo(dx+arrowOffset, (height-arrow_height))
+              path.lineTo(dx+arrowOffset+arrow_width/2, height)
+              path.lineTo(dx+arrowOffset+arrow_width, (height-arrow_height))
             }
             RelativeLayout.RIGHT_OF -> {
                  height = measuredHeight.toFloat()-dy*2-shadowRadius*2
