@@ -51,7 +51,7 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
     }
 
     private var duration = 2000
-    private var content: String? = null
+    private var content: String = ""
 
 
     private var textColor = Color.BLACK
@@ -68,11 +68,9 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
     }
 
 
-    fun setContent(str: String) {
+    fun setContent(str: String):TipViewBuilder {
         content = str
-        tip = TipView(ctx).apply {
-            setText(str)
-        }
+        return this
     }
 
 
@@ -95,20 +93,20 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
 
 
     fun show(): TipViewBuilder {
-        if (tip == null && content != null) {
-            setContent(content!!)
+        if (tip == null) {
+            tip = TipView(ctx,anchor)
         }
 
         (tip as TipView)
                 .apply {
+                    setText(content)
                     tipBackGroundColor(backGroundColor)
                     addLayoutRule(this@TipViewBuilder.layoutRule)
                     tipTextColor(this@TipViewBuilder.textColor)
                     if (this@TipViewBuilder.arrowOffset>0){
                         arrowOffset(this@TipViewBuilder.arrowOffset)
                     }
-                    anchor(anchor)
-                    anchor.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+                    anchor.addOnLayoutChangeListener { v, _, _, _, _, _, _, oldRight, oldBottom ->
                         //  Log.d("TipViewBuilder", "anchor change")
                         Looper.myQueue()
                                 .addIdleHandler {
