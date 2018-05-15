@@ -94,6 +94,7 @@ class Tiast(val ctx: Context,val anchor:View) {
         (tip as SimpleTipView)
                 .apply {
                     tipBackGroundColor(backGroundColor)
+                    addLayoutRule(this@Tiast.layoutRule)
                     tipTextColor(this@Tiast.textColor)
                     anchor(anchor)
                     anchor.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
