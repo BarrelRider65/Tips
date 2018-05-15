@@ -4,7 +4,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Looper
 import android.support.design.widget.Snackbar
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -15,7 +14,7 @@ import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    var tiast:Tiast? = null
+    var tipViewBuilder:TipViewBuilder? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,11 +27,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         Looper.myQueue().addIdleHandler {
-            tiast = Tiast.
+            tipViewBuilder = TipViewBuilder.
                     Companion.
                     make(this,"添加后有月、季度、年、永久等多个付费档供成员选择",button)
-                    .addRule(RelativeLayout.LEFT_OF)
-                    .textColor(Color.WHITE)
+                    .addRule(RelativeLayout.BELOW)
+                    .arrowOffset(dip2px(20f))
+                    .textColor(Color.BLACK)
                     .backGroundColor(Color.BLUE)
                     .show()
             false
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        tiast?.dismiss()
+        tipViewBuilder?.dismiss()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

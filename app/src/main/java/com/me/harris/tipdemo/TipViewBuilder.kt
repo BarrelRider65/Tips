@@ -10,12 +10,12 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.RelativeLayout
 
-class Tiast(val ctx: Context,val anchor:View) {
+class TipViewBuilder(val ctx: Context, val anchor:View) {
 
     companion object {
 
-        fun make(ctx: Context, str: String, anchor:View,mills: Int = 4000): Tiast {
-            return Tiast(ctx,anchor).apply {
+        fun make(ctx: Context, str: String, anchor:View,mills: Int = 4000): TipViewBuilder {
+            return TipViewBuilder(ctx,anchor).apply {
                 setContent(str)
                 duration = mills
             }
@@ -33,11 +33,18 @@ class Tiast(val ctx: Context,val anchor:View) {
     }
 
     // 支持RelativeLayout的Rule , above , left of , below ,right of
-    fun addRule(rule:Int):Tiast {
+    fun addRule(rule:Int):TipViewBuilder {
         this.layoutRule = rule
         return this
     }
 
+
+    fun arrowOffset(offset:Int): TipViewBuilder {
+        this.arrowOffset = offset
+        return this
+    }
+
+    var arrowOffset:Int = 0
 
     init {
     }
@@ -49,12 +56,12 @@ class Tiast(val ctx: Context,val anchor:View) {
     private var textColor = Color.BLACK
     private var backGroundColor = Color.WHITE
 
-    fun textColor(color: Int): Tiast {
+    fun textColor(color: Int): TipViewBuilder {
         this.textColor = color
         return this
     }
 
-    fun backGroundColor(color: Int): Tiast {
+    fun backGroundColor(color: Int): TipViewBuilder {
         this.backGroundColor = color
         return this
     }
@@ -86,7 +93,7 @@ class Tiast(val ctx: Context,val anchor:View) {
 
 
 
-    fun show(): Tiast {
+    fun show(): TipViewBuilder {
         if (tip == null && content != null) {
             setContent(content!!)
         }
@@ -94,11 +101,12 @@ class Tiast(val ctx: Context,val anchor:View) {
         (tip as SimpleTipView)
                 .apply {
                     tipBackGroundColor(backGroundColor)
-                    addLayoutRule(this@Tiast.layoutRule)
-                    tipTextColor(this@Tiast.textColor)
+                    addLayoutRule(this@TipViewBuilder.layoutRule)
+                    tipTextColor(this@TipViewBuilder.textColor)
+                    arrowOffset(this@TipViewBuilder.arrowOffset)
                     anchor(anchor)
                     anchor.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
-                        //  Log.d("Tiast", "anchor change")
+                        //  Log.d("TipViewBuilder", "anchor change")
                         Looper.myQueue()
                                 .addIdleHandler {
                                     update()
@@ -168,7 +176,7 @@ class Tiast(val ctx: Context,val anchor:View) {
 
     private val handler = Handler()
 
-    fun dismiss(): Tiast {
+    fun dismiss(): TipViewBuilder {
         tip?.let {
             if (it.isAttachedToWindow)
                 wm.removeView(it)

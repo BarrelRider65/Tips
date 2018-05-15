@@ -127,7 +127,7 @@ class SimpleTipView : View {
 
             }
             RelativeLayout.LEFT_OF -> {
-                remainingWidth = array[0]
+                remainingWidth = array[0]-arrow_height
                 val exceeedingLimit:Boolean
                 if (txtRawWidth>remainingWidth- padding * 2 - dx * 2 -arrow_height- shadowRadius * 2){ //文字长度一行放不下
                     exceeedingLimit = true
@@ -152,7 +152,7 @@ class SimpleTipView : View {
 
             }
             else -> {
-                remainingWidth = context.screenWidth()-array[0]- anchor!!.measuredWidth
+                remainingWidth = context.screenWidth()-array[0]- anchor!!.measuredWidth-arrow_height
                 val exceeedingLimit:Boolean
                 if (txtRawWidth>remainingWidth-padding * 2 - dx * 2 -arrow_height- shadowRadius * 2){ // 气泡在锚点右侧，剩余的空间已经摆不下了，需要换行
                     exceeedingLimit = true
@@ -271,7 +271,7 @@ class SimpleTipView : View {
             RelativeLayout.LEFT_OF ->{
                 height = measuredHeight.toFloat()-dy*2-shadowRadius*2
                 width = measuredWidth.toFloat()-dx*2-shadowRadius*2-arrow_height
-                roundRect.set(dx-arrow_height,dy,dx+width-arrow_height,dy+height)
+                roundRect.set(left.toFloat()-padding,dy,dx+measuredWidth-arrow_height,dy+height)
             }
             RelativeLayout.BELOW -> {
              height = measuredHeight.toFloat()-dy*2-shadowRadius*2-arrow_height
