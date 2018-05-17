@@ -30,9 +30,14 @@ class MainActivity : AppCompatActivity() {
             tipViewBuilder = TipViewBuilder.
                     Companion.
                     make(this,"添加后有月、季度、年、永久等多个付费档供成员选择",button3)
-                    .addRule(RelativeLayout.BELOW)
+                    .addRule(RelativeLayout.ABOVE)
                     .textColor(Color.WHITE)
                     .backGroundColor(Color.BLUE)
+                    .apply {
+                        marginTop = dip2px(12f)
+                         padding =  ctx.dip2px(10f).toFloat()
+                         verticalPadding = ctx.dip2px(2f).toFloat()
+                    }
                     .show()
             false
         }

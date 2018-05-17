@@ -33,6 +33,7 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
     }
 
     // 支持RelativeLayout的Rule , above , left of , below ,right of
+    //暂时不支持left_of ,right_of 。 因为要换行什么的
     fun addRule(rule:Int):TipViewBuilder {
         this.layoutRule = rule
         return this
@@ -106,6 +107,10 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
                     if (this@TipViewBuilder.arrowOffset>0){
                         arrowOffset(this@TipViewBuilder.arrowOffset)
                     }
+                    verticalPadding = this@TipViewBuilder.verticalPadding
+                    padding = this@TipViewBuilder.padding
+
+
                     anchor.addOnLayoutChangeListener { v, _, _, _, _, _, _, oldRight, oldBottom ->
                         //  Log.d("TipViewBuilder", "anchor change")
                         Looper.myQueue()
@@ -116,7 +121,6 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
 
                     }
                 }
-
 
         wm.addView(tip, params())
 //        handler
@@ -131,11 +135,23 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
 
     var center_horizontal = true
 
+    var marginTop:Int = 0
+    var marginLeft:Int = 0
+    var margintRight = 0
+    var marginBottom = 0
+
+
+    var padding =  ctx.dip2px(10f).toFloat()
+    var verticalPadding = ctx.dip2px(2f).toFloat()
+
+
+
+
 
     private fun params(): WindowManager.LayoutParams {
         val anchorSize = calanchorPosition() //锚点的左上角相对于屏幕的位置
         val selfSize = (tip as TipView).calculateMeasureSize() //控件自己占据的宽度和高度
-        val lp = WindowManager.LayoutParams()
+        val lp = TipLayoutParameters()
         lp.width = selfSize[0] //控件自己想要的宽度
         lp.height = selfSize[1] //控件自己想要的高度
         lp.format = PixelFormat.TRANSLUCENT
@@ -149,20 +165,20 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
 
             RelativeLayout.ABOVE -> {
                 if (center_horizontal){
-                    lp.x = (ctx.screenWidth()-selfSize[0])/2
+                    lp.x = (ctx.screenWidth()-selfSize[0])/2+marginLeft
                 }else{
-                    lp.x = anchorSize[0]+anchor.measuredWidth/2-lp.width/2 //默认对齐
+                    lp.x = anchorSize[0]+anchor.measuredWidth/2-lp.width/2+marginLeft //默认对齐
                 }
-                lp.y = ((anchorSize[1]-lp.height)+(tip as TipView).verticalPadding).toInt()
+                lp.y = ((anchorSize[1]-lp.height)+(tip as TipView).verticalPadding).toInt()-marginBottom
             }
 
             RelativeLayout.BELOW -> {
                 if (center_horizontal){ //在屏幕中间
-                    lp.x = (ctx.screenWidth()-selfSize[0])/2
+                    lp.x = (ctx.screenWidth()-selfSize[0])/2+marginLeft
                 }else {
-                    lp.x = anchorSize[0]+anchor.measuredWidth/2-lp.width/2 //默认对齐
+                    lp.x = anchorSize[0]+anchor.measuredWidth/2-lp.width/2+marginLeft //默认对齐
                 }
-                lp.y = anchorSize[1]+anchor.measuredHeight//在锚点下方
+                lp.y = anchorSize[1]+anchor.measuredHeight+marginTop//在锚点下方
             }
 
             RelativeLayout.LEFT_OF -> {
@@ -178,6 +194,8 @@ class TipViewBuilder(val ctx: Context, val anchor:View) {
         }
         return lp
     }
+
+
 
     private fun update() {
         if (tip?.isAttachedToWindow == true)

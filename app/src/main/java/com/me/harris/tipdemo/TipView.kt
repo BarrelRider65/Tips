@@ -91,17 +91,21 @@ class TipView : View  {
 
 
     var layout: Layout? = null
-    val padding by lazy {
-        context.dip2px(10f).toFloat()
-    }
 
-    val verticalPadding by lazy {
-        context.dip2px(2f).toFloat()
-    }
 
-    val maxContentWidth by lazy {
-        context.screenWidth()/2
-    }
+    var padding =  0f
+
+
+//    val padding by lazy {
+//        context.dip2px(10f).toFloat()
+//    }
+
+//    val verticalPadding by lazy {
+//        context.dip2px(2f).toFloat()
+//    }
+    var verticalPadding = 0f
+
+
 
     //计算实际需要的宽高
     fun calculateMeasureSize(): IntArray {
@@ -226,17 +230,17 @@ class TipView : View  {
                 return arrowOffset
             }
         var array = IntArray(2)
-        anchor!!.getLocationOnScreen(array)
+        anchor.getLocationOnScreen(array)
 
             when (layoutRule) {
                 RelativeLayout.BELOW -> {
 //                    return (size[0]-arrow_width)/2
-                    val arrowAbsPosition = array[0]+anchor!!.measuredWidth/2//箭头相对于屏幕左侧的绝对距离
-                    return arrowAbsPosition-(context.screenWidth()-measuredWidth)/2
+                    val arrowAbsPosition = array[0]+ anchor.measuredWidth/2//箭头相对于屏幕左侧的绝对距离
+                    return arrowAbsPosition-(context.screenWidth()-measuredWidth)/2-arrow_width/2
                 }
                 RelativeLayout.ABOVE -> {
-                    val arrowAbsPosition = array[0]+anchor!!.measuredWidth/2 //箭头相对于屏幕左侧的绝对距离
-                    return arrowAbsPosition-(context.screenWidth()-measuredWidth)/2
+                    val arrowAbsPosition = array[0]+ anchor.measuredWidth/2 //箭头相对于屏幕左侧的绝对距离
+                    return arrowAbsPosition-(context.screenWidth()-measuredWidth)/2-arrow_width/2
                 }
                 RelativeLayout.LEFT_OF -> {
                     return   (array[1]-arrow_width)/2
