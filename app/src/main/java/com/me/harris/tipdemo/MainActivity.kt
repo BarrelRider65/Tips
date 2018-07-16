@@ -1,5 +1,6 @@
 package com.me.harris.tipdemo
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Looper
@@ -22,8 +23,10 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+            val int = Intent(this,GlideSampleActivity::class.java)
+            startActivity(int)
+//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                    .setAction("Action", null).show()
         }
 
         Looper.myQueue().addIdleHandler {
