@@ -1,0 +1,1 @@
+[with circle ci 2.0 ,we can push to git branch after a successful build](https://jtway.co/deploying-jekyll-to-github-pages-with-circleci-2-0-3eb69324bc6e)
