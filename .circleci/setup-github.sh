@@ -12,4 +12,4 @@ git add -fA
 git commit --allow-empty -m "$(git log dev -1 --pretty=%B)"
 git push origin master
 
-echo "deployed successfully"
+echo "deployed successfully "
