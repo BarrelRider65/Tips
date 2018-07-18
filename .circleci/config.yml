@@ -43,11 +43,11 @@ jobs:
           #    bash .circleci/setup-github.sh
           # fi
 
-workflows:
-  version: 2
-  commit-workflow:
-    jobs:
-      - build 
+# workflows:
+#   version: 2
+#   commit-workflow:
+#     jobs:
+#       - build 
   # scheduled-workflow:
   #   triggers:
   #     - schedule:
