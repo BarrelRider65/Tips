@@ -44,6 +44,16 @@ jobs:
 
 workflows:
   version: 2
-  build:
+  commit-workflow:
     jobs:
-      - deploy 
+      - build 
+  # scheduled-workflow:
+  #   triggers:
+  #     - schedule:
+  #         cron: "0 1 * * *"
+  #         filters:
+  #           branches:
+  #             only: try-schedule-workflow
+
+    # jobs:
+    #   - build
