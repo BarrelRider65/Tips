@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.me.harris.tipdemo.ExampleUnitTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2018-07-18T07:52:35" hostname="ec99ffc16c98" time="0.001">
-  <properties/>
-  <testcase name="addition_isCorrect" classname="com.me.harris.tipdemo.ExampleUnitTest" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

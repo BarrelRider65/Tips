@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">TipDemo</string>
     <string name="action_settings">Settings</string>
+    <string name="content">If someone loves a flower, of which just one single blossom grows in all the millions and millions of stars, it is enough to make him happy just to look at the stars. He can say to himself, "Somewhere, my flower is there ..." But if the sheep eats the flower, in one moment all his stars will be darkened ... And you think that is not important!</string>
+    <string name="sample_text">交易开放 7月16日10:00AM (EDT)BitMart交易所开放交易，17日10:00AM(EDT)开放取款</string>
 </resources>

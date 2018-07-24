@@ -1,0 +1,189 @@
+package com.me.harris.tipdemo;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.RotateDrawable;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.annotation.PluralsRes;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ReplacementSpan;
+import android.util.DisplayMetrics;
+import android.widget.TextView;
+
+public class GradientActivity extends AppCompatActivity {
+
+    public static final String TEXT = "交易开放 7月16日10:00AM(EDT)BitMart交易所开放交易，17日10:00AM(EDT)开放取款";
+
+    TextView mTextView;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_gradient_curved);
+        mTextView = findViewById(R.id.text);
+//        GradientDrawable drawable = (GradientDrawable) ContextCompat.getDrawable(this,R.drawable.simple_rectangle);
+//        drawable.setBounds(0,0,100,100);
+//        ImageSpan imageSpan = new ImageSpan(drawable, DynamicDrawableSpan.ALIGN_BOTTOM);
+////        ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(ContextCompat.getColor(this,R.color.colorAccent));
+//        SpannableString spannableString = new SpannableString(mTextView.getText());
+//
+//
+//        spannableString.setSpan(imageSpan,0,4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//        mTextView.setText(spannableString);
+        doStuff();
+
+    }
+
+
+
+    private void doStuff(){
+        mTextView = findViewById(R.id.text);
+        String content = getString(R.string.sample_text);
+        SpannableString spanString = new SpannableString(content);
+        int start = 0;
+        int end = 4;
+        // 设定渐变色
+        int[] colors = {
+                Color.parseColor("#a4caf9"), Color.parseColor("#4c99f5")
+        };
+        int radius = (int) dp2Pixel(10,this);
+        spanString.setSpan(new RadiusGradientBackgroundSpan(colors,radius,this),start,end,Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        mTextView.setText(spanString);
+
+    }
+
+
+    public class RadiusGradientBackgroundSpan extends ReplacementSpan {
+
+        private int mSize;
+
+        private LayerDrawable mBgDrawable;
+
+        Context mContext;
+
+        int[] mColors;
+
+        int mRadius;
+
+        Paint mLinePaint;
+
+        public RadiusGradientBackgroundSpan(int[] colorArray, int radius, Context context) {
+            this.mColors = colorArray;
+            this.mContext = context;
+            this.mRadius = radius;
+            mBgDrawable = (LayerDrawable) ContextCompat.getDrawable(mContext,R.drawable.skewed_drawable);
+
+            mLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mLinePaint.setColor(Color.WHITE);
+        }
+
+
+
+        @Override
+        public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+            mSize = (int) (paint.measureText(text, start, end) + 2 * mRadius);
+            //mSize就是span的宽度，span有多宽，开发者可以在这里随便定义规则
+            //我的规则：这里text传入的是SpannableString，start，end对应setSpan方法相关参数
+            //可以根据传入起始截至位置获得截取文字的宽度，最后加上左右两个圆角的半径得到span宽度
+            return mSize;
+        }
+
+//        int paddingTop,paddingBottom,paddingLeft,paddingRight = 2;
+
+        @Override
+        public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
+            int color = paint.getColor();//保存文字颜色
+            float textSize = paint.getTextSize();
+            paint.setAntiAlias(true);// 设置画笔的锯齿效果
+            RectF oval = new RectF(x, y + paint.ascent(), x + mSize, y + paint.descent());
+            //设置文字背景矩形，x为span其实左上角相对整个TextView的x值，y为span左上角相对整个View的y值。paint.ascent()获得文字上边缘，paint.descent()获得文字下边缘
+            Rect rec = new Rect((int)x,(int)(y+paint.ascent()),(int)(x+mSize),(int)(y+paint.descent()));
+            mBgDrawable = new LayerDrawable(createDrawable());
+
+            mBgDrawable.setBounds(rec);
+            mBgDrawable.draw(canvas);
+
+            int radius = mRadius;
+
+
+            Path path = new Path();
+            float horizontalOffset = (float) (Math.tan((30.0f/180.0f)*Math.PI)*oval.height())-10;
+            path.moveTo(oval.left+horizontalOffset, oval.top);
+            path.lineTo(oval.left+horizontalOffset, (float) (oval.top));
+            path.arcTo(new RectF(oval.left+horizontalOffset,
+                            oval.top,
+                    ((float) radius) * 2.0f+horizontalOffset,
+                            ((float) radius) * 2.0f),
+                    180.0f, 90.0f, true);
+            path.lineTo((float) radius+horizontalOffset, oval.top);
+            path.lineTo(oval.left+horizontalOffset, oval.top);
+            path.close();
+            canvas.drawPath(path,mLinePaint);
+
+
+            paint.setColor(color);//恢复画笔的文字颜色
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(0.8f*textSize);
+            canvas.drawText(text, start, end, x+radius , y, paint);//绘制文字
+
+
+//             draw overlay
+//            canvas.
+
+            paint.setTextSize(textSize);
+            paint.setColor(color);//恢复画笔的文字颜色
+        }
+
+
+        private Drawable[] createDrawable(){
+            Drawable[] layers = new Drawable[3];
+            RotateDrawable drawable1 = (RotateDrawable) ContextCompat.getDrawable(GradientActivity.this,R.drawable.rotate_left);
+            RotateDrawable drawable2 = (RotateDrawable) ContextCompat.getDrawable(GradientActivity.this,R.drawable.rotate_right);
+            GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                    mColors);
+            layers[0] = gradientDrawable;
+            layers[1] = drawable1;
+            layers[2] = drawable2;
+            return layers;
+        }
+
+
+
+    }
+
+
+//    private void drawRoundRect(float left, float top, float right, float bottom, Canvas canvas,int radius,Paint onlinePaint) {
+//        Path path = new Path();
+//        path.moveTo(left, top);
+//        path.lineTo(right, top);
+//        path.lineTo(right, bottom);
+//        path.lineTo(left + radius, bottom);
+//        path.quadTo(left, bottom, left, bottom - radius);
+//        path.lineTo(left, top + radius);
+//        path.quadTo(left, top, left + radius, top);
+//        canvas.drawPath(path, onlinePaint);
+//    }
+
+    public static float dp2Pixel(float dp, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float px = dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return px;
+    }
+
+
+
+}
