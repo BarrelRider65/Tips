@@ -25,7 +25,7 @@ import android.widget.TextView;
 
 public class GradientActivity extends AppCompatActivity {
 
-    public static final String TEXT = "交易开放 7月16日10:00AM(EDT)BitMart交易所开放交易，17日10:00AM(EDT)开放取款";
+    public static final String PLACE_HOLER = "交易开放 7月16日10:00AM(EDT)BitMart交易所开放交易，17日10:00AM(EDT)开放取款";
 
     TextView mTextView;
 
@@ -51,7 +51,7 @@ public class GradientActivity extends AppCompatActivity {
 
     private void doStuff(){
         mTextView = findViewById(R.id.text);
-        String content = getString(R.string.sample_text);
+        String content = PLACE_HOLER;
         SpannableString spanString = new SpannableString(content);
         int start = 0;
         int end = 4;
@@ -68,7 +68,7 @@ public class GradientActivity extends AppCompatActivity {
 
     public class RadiusGradientBackgroundSpan extends ReplacementSpan {
 
-        private int mSize;
+        private int mSize; //这个应该是横向的宽度
 
         private LayerDrawable mBgDrawable;
 
@@ -79,6 +79,9 @@ public class GradientActivity extends AppCompatActivity {
         int mRadius;
 
         Paint mLinePaint;
+
+        Path path;
+
 
         public RadiusGradientBackgroundSpan(int[] colorArray, int radius, Context context) {
             this.mColors = colorArray;
@@ -101,7 +104,7 @@ public class GradientActivity extends AppCompatActivity {
             return mSize;
         }
 
-//        int paddingTop,paddingBottom,paddingLeft,paddingRight = 2;
+        int padding = 6 ;
 
         @Override
         public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
@@ -110,23 +113,32 @@ public class GradientActivity extends AppCompatActivity {
             paint.setAntiAlias(true);// 设置画笔的锯齿效果
             RectF oval = new RectF(x, y + paint.ascent(), x + mSize, y + paint.descent());
             //设置文字背景矩形，x为span其实左上角相对整个TextView的x值，y为span左上角相对整个View的y值。paint.ascent()获得文字上边缘，paint.descent()获得文字下边缘
-            Rect rec = new Rect((int)x,(int)(y+paint.ascent()),(int)(x+mSize),(int)(y+paint.descent()));
+//            Rect rec = new Rect((int)x,(int)(y+paint.ascent()),(int)(x+mSize),(int)(y+paint.descent()));
             mBgDrawable = new LayerDrawable(createDrawable());
 
-            mBgDrawable.setBounds(rec);
+            mBgDrawable.setBounds(new Rect((int)x,(int)(y+paint.ascent()),(int)(x+mSize),(int)(y+paint.descent())+padding*2));
+
+            canvas.save();
             mBgDrawable.draw(canvas);
+            canvas.translate(0,-padding);
+            canvas.restore();
 
             int radius = mRadius;
 
+            if(path==null){
+                path = new Path();
+            }
+            // 画左上角的圆弧
+             path.reset();
 
-            Path path = new Path();
             float horizontalOffset = (float) (Math.tan((30.0f/180.0f)*Math.PI)*oval.height())-10;
+
             path.moveTo(oval.left+horizontalOffset, oval.top);
-            path.lineTo(oval.left+horizontalOffset, (float) (oval.top));
+            path.lineTo(oval.left+horizontalOffset, (float) (oval.top)+radius);
             path.arcTo(new RectF(oval.left+horizontalOffset,
                             oval.top,
-                    ((float) radius) * 2.0f+horizontalOffset,
-                            ((float) radius) * 2.0f),
+                            oval.left+((float) radius) * 2.0f+horizontalOffset,
+                            oval.top+((float) radius) * 2.0f),
                     180.0f, 90.0f, true);
             path.lineTo((float) radius+horizontalOffset, oval.top);
             path.lineTo(oval.left+horizontalOffset, oval.top);
@@ -134,10 +146,27 @@ public class GradientActivity extends AppCompatActivity {
             canvas.drawPath(path,mLinePaint);
 
 
+            //画右下角的圆弧
+//            path.reset();
+
+            path.moveTo(oval.right-horizontalOffset,oval.bottom+radius);
+            path.lineTo(oval.right-horizontalOffset,oval.bottom);
+//            path.arcTo(new RectF(oval.right-horizontalOffset-radius,
+//                    oval.bottom-radius,),0.f,90.0f,true);
+
+            path.lineTo(oval.right-horizontalOffset-radius,oval.bottom+radius);
+            path.lineTo(oval.right-horizontalOffset,oval.bottom+radius);
+            path.close();
+            canvas.drawPath(path,mLinePaint);
+
+
+
+
+
             paint.setColor(color);//恢复画笔的文字颜色
             paint.setColor(Color.WHITE);
             paint.setTextSize(0.8f*textSize);
-            canvas.drawText(text, start, end, x+radius , y, paint);//绘制文字
+            canvas.drawText(text, start, end, x+radius*1.5f , y, paint);//绘制文字
 
 
 //             draw overlay
