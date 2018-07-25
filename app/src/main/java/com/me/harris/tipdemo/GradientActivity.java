@@ -7,10 +7,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,7 +18,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ReplacementSpan;
 import android.util.DisplayMetrics;
-import android.widget.RelativeLayout;
+import android.view.View;
 import android.widget.TextView;
 
 public class GradientActivity extends AppCompatActivity {
@@ -44,13 +42,13 @@ public class GradientActivity extends AppCompatActivity {
 //
 //        spannableString.setSpan(imageSpan,0,4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 //        mTextView.setText(spannableString);
-        doStuff();
+        test();
 
     }
 
 
 
-    private void doStuff(){
+    private void test(){
         mTextView = findViewById(R.id.text);
         String content = PLACE_HOLER;
         SpannableString spanString = new SpannableString(content);
@@ -63,6 +61,19 @@ public class GradientActivity extends AppCompatActivity {
 
         spanString.setSpan(new RadiusGradientBackgroundSpan(colors,this),start,end,Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         mTextView.setText(spanString);
+
+        findViewById(R.id.mbtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String content = getString(R.string.sample_text2);
+                SpannableString  spanString = new SpannableString(content);
+                int[] colors = {
+                        Color.parseColor("#ffb4b5"), Color.parseColor("#f96264")
+                };
+                spanString.setSpan(new RadiusGradientBackgroundSpan(colors,GradientActivity.this),0,6,Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                mTextView.setText(spanString);
+            }
+        });
 
     }
 
@@ -102,8 +113,8 @@ public class GradientActivity extends AppCompatActivity {
         @Override
         public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
             int rowHeight = (int) (paint.descent()-paint.ascent()+padding*2);
-            mSize = (int) ((paint.measureText(text, start, end) )+rowHeight*0.3f);
-            return mSize+10; //与右侧的文字之间保留一点空格
+            mSize = (int) ((paint.measureText(text, start, end) )+rowHeight*Math.tan(degree));
+            return mSize+20; //与右侧的文字之间保留一点空格
         }
 
 
