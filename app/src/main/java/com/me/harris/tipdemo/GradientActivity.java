@@ -19,6 +19,8 @@ import android.text.Spanned;
 import android.text.style.ReplacementSpan;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class GradientActivity extends AppCompatActivity {
@@ -30,18 +32,15 @@ public class GradientActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gradient_curved);
-//        RelativeLayout
-        mTextView = findViewById(R.id.text);
-//        GradientDrawable drawable = (GradientDrawable) ContextCompat.getDrawable(this,R.drawable.simple_rectangle);
-//        drawable.setBounds(0,0,100,100);
-//        ImageSpan imageSpan = new ImageSpan(drawable, DynamicDrawableSpan.ALIGN_BOTTOM);
-////        ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(ContextCompat.getColor(this,R.color.colorAccent));
-//        SpannableString spannableString = new SpannableString(mTextView.getText());
-//
-//
-//        spannableString.setSpan(imageSpan,0,4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-//        mTextView.setText(spannableString);
+//        setContentView(R.layout.activity_gradient_curved);
+
+        RelativeLayout relativeLayout = new RelativeLayout(this);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
+        relativeLayout.setLayoutParams(params);
+        setContentView(relativeLayout);
+        mTextView = new TextView(this);
+        mTextView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        relativeLayout.addView(mTextView);
         test();
 
     }
@@ -49,9 +48,7 @@ public class GradientActivity extends AppCompatActivity {
 
 
     private void test(){
-        mTextView = findViewById(R.id.text);
-        String content = PLACE_HOLER;
-        SpannableString spanString = new SpannableString(content);
+        SpannableString spanString = new SpannableString(PLACE_HOLER);
         int start = 0;
         int end = 4;
         // 设定渐变色
