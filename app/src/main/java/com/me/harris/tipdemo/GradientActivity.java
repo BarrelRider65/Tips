@@ -89,8 +89,8 @@ public class GradientActivity extends AppCompatActivity {
 
             mLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             mLinePaint.setColor(Color.WHITE);
-            mLinePaint.setStyle(Paint.Style.FILL);
-            mLinePaint.setStrokeWidth(1f);
+//            mLinePaint.setStyle(Paint.Style.STROKE);
+//            mLinePaint.setStrokeWidth(1f);
         }
 
 
@@ -147,6 +147,13 @@ public class GradientActivity extends AppCompatActivity {
             path.close();
 
 
+            //画右下角的圆弧
+            path.moveTo(rec.right,rec.bottom);//挪到最右下角
+            path.rLineTo(-radius,0);//开始顺时针画
+
+            path.quadTo(rec.right,rec.bottom,rec.right+radius*0.29f,rec.bottom-radius*0.95f);
+            path.lineTo(rec.right,rec.bottom);
+            path.close();
 //
 //            path.rLineTo(100,0);
 //            path.rLineTo(0,100);
