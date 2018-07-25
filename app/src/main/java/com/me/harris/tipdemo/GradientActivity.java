@@ -88,20 +88,18 @@ public class GradientActivity extends AppCompatActivity {
             mBgDrawable = (LayerDrawable) ContextCompat.getDrawable(mContext,R.drawable.skewed_drawable);
 
             mLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            mLinePaint.setColor(Color.BLACK);
+            mLinePaint.setColor(Color.WHITE);
+            mLinePaint.setStyle(Paint.Style.FILL);
+            mLinePaint.setStrokeWidth(1f);
         }
 
 
 
         @Override
         public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
-//            int rowHeight = fm.bottom-fm.top;
             int rowHeight = (int) (paint.descent()-paint.ascent()+padding*2);
             mSize = (int) ((paint.measureText(text, start, end) )+rowHeight*0.3f);
-            //mSize就是span的宽度，span有多宽，开发者可以在这里随便定义规则
-            //我的规则：这里text传入的是SpannableString，start，end对应setSpan方法相关参数
-            //可以根据传入起始截至位置获得截取文字的宽度，最后加上左右两个圆角的半径得到span宽度
-            return mSize+5; //留一点空格
+            return mSize+20; //与右侧的文字之间保留一点空格
         }
 
         int padding = 6 ;
@@ -122,49 +120,52 @@ public class GradientActivity extends AppCompatActivity {
             Rect rec = new Rect((int)x,(int)(y+paint.ascent()),(int)(x+mSize),(int)(y+paint.descent())+padding*2);
             mBgDrawable.setBounds(rec);
 
-
-            Drawable d=ContextCompat.getDrawable(mContext,R.drawable.simple_rectangle);
-            d.setBounds(rec);
+            Drawable gradientDrawable= new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                    mColors);
+            gradientDrawable.setBounds(rec);
 
 
             canvas.save();
-            canvas.translate(offset,-padding);
+            canvas.translate(offset+2,-padding);
             canvas.skew(-0.3f,0); // 第一个表示x方向上倾斜角度的tan值，第二个参数表示y方向上倾斜角度的tan值
-            d.draw(canvas);
-            canvas.restore();
+            gradientDrawable.draw(canvas);
+
+
+            if(path==null){
+                path = new Path();
+            }
+            path.reset();
+
+
+            //开始画左上角的圆弧
+            int radius = 10;
+            path.moveTo(rec.left,rec.top);
+            path.rLineTo(radius,0);
+
+            path.quadTo(rec.left,rec.top,rec.left-radius*0.29f,rec.top+radius*0.95f);
+            path.lineTo(rec.left,rec.top);
+            path.close();
+
 
 //
-//            if(path==null){
-//                path = new Path();
-//            }
-//            // 画左上角的圆弧
-//             path.reset();
-//            canvas.save();
-//            canvas.translate(0,-padding);
-//
-//
-//
-//            float horizontalOffset = (float) (Math.tan((30.0f/180.0f)*Math.PI)*oval.height());
-//             path.moveTo(rec.left+horizontalOffset-mRadius,rec.top+radius);
-//             path.quadTo(rec.left+horizontalOffset-mRadius,rec.top,rec.left+horizontalOffset+mRadius,rec.top);
-//             path.moveTo(rec.left+horizontalOffset+mRadius,rec.top);
-//             path.lineTo(rec.left+horizontalOffset-mRadius,rec.top);
-//             path.lineTo(rec.left+horizontalOffset-mRadius,rec.top+radius);
-//             path.close();
-//             canvas.drawPath(path,mLinePaint);
-//            canvas.restore();
-//
-//            path.moveTo(oval.left+horizontalOffset, oval.top);
-//            path.lineTo(oval.left+horizontalOffset, (float) (oval.top)+radius);
-//            path.arcTo(new RectF(oval.left+horizontalOffset,
-//                            oval.top,
-//                            oval.left+((float) radius) * 2.0f+horizontalOffset,
-//                            oval.top+((float) radius) * 2.0f),
-//                    180.0f, 90.0f, true);
-//            path.lineTo((float) radius+horizontalOffset, oval.top);
-//            path.lineTo(oval.left+horizontalOffset, oval.top);
-//            path.close();
-//            canvas.drawPath(path,mLinePaint);
+//            path.rLineTo(100,0);
+//            path.rLineTo(0,100);
+//            path.rLineTo(-100,0);
+
+
+
+
+            canvas.drawPath(path,mLinePaint);
+
+
+
+
+            canvas.restore();
+
+
+
+
+
 
 
             //画右下角的圆弧
@@ -187,7 +188,7 @@ public class GradientActivity extends AppCompatActivity {
             paint.setColor(color);//恢复画笔的文字颜色
             paint.setColor(Color.WHITE);
             paint.setTextSize(0.8f*textSize);
-            canvas.drawText(text, start, end, x+offset*1.3f , y, paint);//绘制文字
+            canvas.drawText(text, start, end, x+offset*1.5f , y, paint);//绘制文字
 
 
 //             draw overlay
