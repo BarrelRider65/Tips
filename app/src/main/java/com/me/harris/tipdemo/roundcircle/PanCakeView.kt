@@ -4,6 +4,9 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import android.util.TypedValue
+
+
 
 class PanCakeView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -39,6 +42,7 @@ class PanCakeView @JvmOverloads constructor(
     var secondArchColor = Color.parseColor("#ff4040")//第二个圆弧的颜色
 
     val bgColor = Color.WHITE
+    val txtColor = Color.RED
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -103,8 +107,6 @@ class PanCakeView @JvmOverloads constructor(
         gapPaint.strokeWidth = 10f
         canvas?.drawLine(centerX,centerY,startX.toFloat(),startY.toFloat(),gapPaint);
         canvas?.drawLine(centerX,centerY,endX.toFloat(),endY.toFloat(),gapPaint);
-
-
         //画内部的白色
         paint.color=bgColor
         path.addCircle(centerX,centerY,innerRadius,Path.Direction.CW)
@@ -112,11 +114,48 @@ class PanCakeView @JvmOverloads constructor(
         canvas?.drawPath(path,paint)
         path.reset()
 
+        //画文字
+        //画第一行
+        textPaint.textSize = spToPx(14f,context).toFloat()
+        textPaint.color = txtColor
+        textPaint.textAlign = Paint.Align.CENTER
+        val firstLine = "1-BitMEX"
+        val secondLine = "27.77%"
+
+        if (firstLineWidth==0f){
+            firstLineWidth = textPaint.measureText(firstLine)
+        }
+        if (secondLineWidth==0f) {
+            secondLineWidth = textPaint.measureText(secondLine)
+        }
+
+        if (firstLineHeight==0f){
+            val textBounds = Rect()
+            textPaint.getTextBounds(firstLine, 0, firstLine.length, textBounds)
+            firstLineHeight = textBounds.height().toFloat()
+        }
+
+        if (secondLineHeight==0f){
+            val textBounds = Rect()
+            textPaint.getTextBounds(secondLine, 0, secondLine.length, textBounds)
+            secondLineHeight = textBounds.height().toFloat()
+        }
+
+        canvas?.drawText(firstLine, (width/2).toFloat(),centerY-firstLineHeight,textPaint)
+        canvas?.drawText(secondLine, (width/2).toFloat(),centerY+secondLineHeight,textPaint)
 
 
 
 
+    }
 
+    var firstLineWidth = 0f
+    var secondLineWidth = 0f
+    var firstLineHeight = 0f
+    var secondLineHeight = 0f
+
+    fun spToPx(sp: Float, context: Context): Int {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.resources.displayMetrics).toInt()
     }
 
 
