@@ -23,6 +23,9 @@ class PanCakeView @JvmOverloads constructor(
     var centerX = 0f
     var centerY = 0f
 
+    val firstLine = "1-BitMEX"
+    val secondLine = "27.77%"
+
 
 
 
@@ -35,8 +38,8 @@ class PanCakeView @JvmOverloads constructor(
     val offset = 30f//伸出的距离
 
     var startAngle = 0f //顺时针画圆弧开始的角度
-    var sweepAngle = 60f //默认第一个圆弧是60度
-    val degreeGap = 5f//不同圆弧之间的间隔，默认隔开5度
+    var sweepAngle = 60f //默认第一个圆弧是60度，
+    // 这里要注意一点，假如上面的圆弧的角度超出了180度，那么底部的圆弧就要伸出来
 
     var firstArchColor = Color.parseColor("#02b388")//从startAngle开始，第一个圆弧的颜色
     var secondArchColor = Color.parseColor("#ff4040")//第二个圆弧的颜色
@@ -78,6 +81,7 @@ class PanCakeView @JvmOverloads constructor(
 
 
         //画大的那部分圆
+//        val bottomRadius = if (sweepAngle<=180) outterRadius else outterRadius+offset/2
         path.addCircle(centerX,centerY,outterRadius,Path.Direction.CW)
         path.close()
         canvas?.drawPath(path,paint)
@@ -86,7 +90,7 @@ class PanCakeView @JvmOverloads constructor(
 
 
 
-        //画小的部分
+        //画上面的的部分
         paint.color = secondArchColor
         val secondRadius = outterRadius+offset/2
         val startX = centerX-secondRadius*Math.sin((sweepAngle/2)*Math.PI/180)
@@ -105,8 +109,10 @@ class PanCakeView @JvmOverloads constructor(
 
         //画两根横线
         gapPaint.strokeWidth = 10f
-        canvas?.drawLine(centerX,centerY,startX.toFloat(),startY.toFloat(),gapPaint);
-        canvas?.drawLine(centerX,centerY,endX.toFloat(),endY.toFloat(),gapPaint);
+        canvas?.drawLine(centerX,centerY,startX.toFloat(),startY.toFloat(),gapPaint)
+        canvas?.drawLine(centerX,centerY,endX.toFloat(),endY.toFloat(),gapPaint)
+
+
         //画内部的白色
         paint.color=bgColor
         path.addCircle(centerX,centerY,innerRadius,Path.Direction.CW)
@@ -116,11 +122,11 @@ class PanCakeView @JvmOverloads constructor(
 
         //画文字
         //画第一行
-        textPaint.textSize = spToPx(14f,context).toFloat()
+        val txtSize =  spToPx(14f,context).toFloat()
+        textPaint.textSize = txtSize
+        textPaint
         textPaint.color = txtColor
         textPaint.textAlign = Paint.Align.CENTER
-        val firstLine = "1-BitMEX"
-        val secondLine = "27.77%"
 
         if (firstLineWidth==0f){
             firstLineWidth = textPaint.measureText(firstLine)
@@ -141,10 +147,16 @@ class PanCakeView @JvmOverloads constructor(
             secondLineHeight = textBounds.height().toFloat()
         }
 
+//        gapPath.reset()
+//        //画左侧的横线
+//        path.moveTo(centerX,centerY)
+//        path.lineTo()
         canvas?.drawText(firstLine, (width/2).toFloat(),centerY-firstLineHeight,textPaint)
+        textPaint.typeface = Typeface.DEFAULT_BOLD
+        textPaint.textSize = txtSize*1.2f
         canvas?.drawText(secondLine, (width/2).toFloat(),centerY+secondLineHeight,textPaint)
-
-
+        textPaint.typeface = Typeface.DEFAULT
+        textPaint.textSize = txtSize
 
 
     }
@@ -153,6 +165,8 @@ class PanCakeView @JvmOverloads constructor(
     var secondLineWidth = 0f
     var firstLineHeight = 0f
     var secondLineHeight = 0f
+
+    val gapPath = Path()
 
     fun spToPx(sp: Float, context: Context): Int {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.resources.displayMetrics).toInt()
