@@ -9,6 +9,7 @@ class RoundCircleActivity :AppCompatActivity(){
 
     lateinit var toolbar:Toolbar
 //    lateinit var circleView2: CircularStatisticsView2
+    lateinit var pancake:PanCakeView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,17 +19,28 @@ class RoundCircleActivity :AppCompatActivity(){
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.title = "RoundCircle"
 
-//        circleView2 = findViewById(R.id.circleView)
+        pancake = findViewById(R.id.circleView)
 
 
 
+
+        pancake.sweepAngle = 0.2f
         decorateCircle()
 
     }
 
+
+
+    private val runnable = Runnable {
+        decorateCircle()
+    }
+
     private fun decorateCircle() {
-//        circleView2.setCircleWidth(300)
-//        circleView2.setPercentage(33.3f,66.6f)
+        pancake.sweepAngle+=1f
+        pancake.postInvalidate()
+        if (pancake.sweepAngle<=360){
+            pancake.postDelayed(runnable,20)
+        }
     }
 
 

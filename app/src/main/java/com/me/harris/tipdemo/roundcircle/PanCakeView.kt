@@ -38,7 +38,7 @@ class PanCakeView @JvmOverloads constructor(
     val offset = 30f//伸出的距离
 
     var startAngle = 0f //顺时针画圆弧开始的角度
-    var sweepAngle = 60f //默认第一个圆弧是60度，
+    var sweepAngle = 4f
     // 这里要注意一点，假如上面的圆弧的角度超出了180度，那么底部的圆弧就要伸出来
 
     var firstArchColor = Color.parseColor("#02b388")//从startAngle开始，第一个圆弧的颜色
@@ -78,39 +78,31 @@ class PanCakeView @JvmOverloads constructor(
             innerRadius = outterRadius/2f
         }
 
+        val upperLarger = sweepAngle>180//底部的Angle要大于180度的话，大一点的位置就要突出
 
 
-        //画大的那部分圆
-//        val bottomRadius = if (sweepAngle<=180) outterRadius else outterRadius+offset/2
-        path.addCircle(centerX,centerY,outterRadius,Path.Direction.CW)
+
+        //画底部的那部分圆
+        val bottomRadius = if (sweepAngle<=180) outterRadius else outterRadius+offset/2
+        path.addCircle(centerX,centerY,bottomRadius,Path.Direction.CW)
         path.close()
         canvas?.drawPath(path,paint)
         path.reset()
 
 
+        //把即将画上去的底部的圆的底部抹白
+        if (sweepAngle>5f) {
+            drawBellowUpper(canvas)
+        }
+
+            //画上面的那部分圆
+        drawUpper(canvas)
 
 
-        //画上面的的部分
-        paint.color = secondArchColor
-        val secondRadius = outterRadius+offset/2
-        val startX = centerX-secondRadius*Math.sin((sweepAngle/2)*Math.PI/180)
-        val startY = centerY-secondRadius*Math.cos((sweepAngle/2)*Math.PI/180)
-        val endX = centerX+secondRadius*Math.sin((sweepAngle/2)*Math.PI/180)
-        val endY = startY
-        path.moveTo(centerX,centerY)
-        path.lineTo(startX.toFloat(),startY.toFloat())
-        path.lineTo(endX.toFloat(), endY.toFloat())
-        path.close()
-        val recf = RectF(centerX-secondRadius,centerY-secondRadius,
-                centerX+secondRadius,centerY+secondRadius)
-        path.addArc(recf,-90f-(sweepAngle/2), sweepAngle)
-        canvas?.drawPath(path,paint)
-        path.reset()
 
-        //画两根横线
-        gapPaint.strokeWidth = 10f
-        canvas?.drawLine(centerX,centerY,startX.toFloat(),startY.toFloat(),gapPaint)
-        canvas?.drawLine(centerX,centerY,endX.toFloat(),endY.toFloat(),gapPaint)
+        if (sweepAngle in 5f..355.0f){
+            drawGap(canvas)
+        }
 
 
         //画内部的白色
@@ -166,14 +158,82 @@ class PanCakeView @JvmOverloads constructor(
     var firstLineHeight = 0f
     var secondLineHeight = 0f
 
-    val gapPath = Path()
+
+
+    val rectF= RectF()
 
     fun spToPx(sp: Float, context: Context): Int {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.resources.displayMetrics).toInt()
     }
 
+    //画红色的部分
+    fun drawUpper(canvas: Canvas?){
+        //画上面的的部分
+        paint.color = secondArchColor
+        val secondRadius = if(sweepAngle<=180f) (outterRadius+offset/2) else outterRadius
+        val startX = centerX-secondRadius*Math.sin((sweepAngle/2)*Math.PI/180)
+        val startY = centerY-secondRadius*Math.cos((sweepAngle/2)*Math.PI/180)
+        val endX = centerX+secondRadius*Math.sin((sweepAngle/2)*Math.PI/180)
+        val endY = startY
+        path.moveTo(centerX,centerY)
+        path.lineTo(startX.toFloat(),startY.toFloat())
+        path.lineTo(endX.toFloat(), endY.toFloat())
+        path.close()
+
+        rectF.set(centerX-secondRadius,centerY-secondRadius,
+                centerX+secondRadius,centerY+secondRadius)
+        path.addArc(rectF,-90f-(sweepAngle/2), sweepAngle)
+        canvas?.drawPath(path,paint)
+        path.reset()
+    }
+
+    //在底部画上白色
+    fun drawBellowUpper(canvas: Canvas?){
+        paint.color = bgColor
+        path.reset()
+        val secondRadius = outterRadius+offset/2+2
+        val sweepAngle = sweepAngle+getGapDegree()
+        val startX = centerX-secondRadius*Math.sin((sweepAngle/2)*Math.PI/180)
+        val startY = centerY-secondRadius*Math.cos((sweepAngle/2)*Math.PI/180)
+        val endX = centerX+secondRadius*Math.sin((sweepAngle/2)*Math.PI/180)
+        val endY = startY
+        path.moveTo(centerX,centerY)
+        path.lineTo(startX.toFloat(),startY.toFloat())
+        path.lineTo(endX.toFloat(), endY.toFloat())
+        path.close()
+
+        rectF.set(centerX-secondRadius,centerY-secondRadius,
+                centerX+secondRadius,centerY+secondRadius)
+        path.addArc(rectF,-90f-(sweepAngle/2), sweepAngle)
+        canvas?.drawPath(path,paint)
+        path.reset()
+    }
 
 
+    fun drawGap(canvas: Canvas?){
+        //画两根横线
+        val secondRadius = outterRadius+offset/2+2
+        val degree = sweepAngle+getGapDegree()
+        val startX = centerX-secondRadius*Math.sin((degree/2)*Math.PI/180)
+        val startY = centerY-secondRadius*Math.cos((degree/2)*Math.PI/180)
+        val endX = centerX+secondRadius*Math.sin((degree/2)*Math.PI/180)
+        val endY = startY
+        gapPaint.strokeWidth = (outterRadius*Math.PI*(getGapDegree()/180f)).toFloat()
+        canvas?.drawLine(centerX,centerY,startX.toFloat(),startY.toFloat(),gapPaint)
+        canvas?.drawLine(centerX,centerY,endX.toFloat(),endY.toFloat(),gapPaint)
+    }
 
+    private fun getGapDegree():Float{
+        return if (sweepAngle >= 355f) {
+            val remain = 360f-sweepAngle
+            remain*0.1f
+        } else {
+            2f
+        }
+    }
 
+    fun updateSweepAngle( newAngle:Float){
+        this.sweepAngle = newAngle
+        postInvalidate()
+    }
 }
