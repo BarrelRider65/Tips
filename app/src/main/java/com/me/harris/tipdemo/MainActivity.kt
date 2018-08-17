@@ -1,73 +1,64 @@
 package com.me.harris.tipdemo
 
+import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
+import android.graphics.Rect
 import android.os.Bundle
-import android.os.Looper
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.RelativeLayout
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.view.View
+import com.me.harris.tipdemo.`interface`.ItemClickListener
+import com.me.harris.tipdemo.adapter.CustomAdapter
+import com.me.harris.tipdemo.roundcircle.RoundCircleActivity
+import kotlinx.android.synthetic.main.activity_recycler_view.*
 
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
+class MainActivity :AppCompatActivity(), ItemClickListener {
 
-class MainActivity : AppCompatActivity() {
 
-    var tipViewBuilder:TipViewBuilder? = null
+
+    lateinit var mAdapter: CustomAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        setContentView(R.layout.activity_recycler_view)
+        initAdapter()
+    }
 
-        fab.setOnClickListener { view ->
-            val int = Intent(this,GradientActivity::class.java)
-            startActivity(int)
-//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null).show()
+    private fun initAdapter() {
+        val userList = mutableListOf<Triple<String,Int,Class<out Activity>>>(
+                Triple("GradientSample",1, GradientActivity::class.java),
+                Triple("GlideSampleActivity",2,GlideSampleActivity::class.java),
+                Triple("ThirdActivity",3,ThirdActivity::class.java),
+                Triple("RoundCorner",4,ImageviewCornerActivity::class.java),
+                Triple("RoundCircle",5, RoundCircleActivity::class.java)
+//                Triple("ClipPath",6,CustomDrawingActivity::class.java),
+//                Triple("Locale",6,UpdatingConfigActivity::class.java)
+
+        ).apply {
+            //            this.addAll(this)
+//            this.addAll(this)
+//            this.addAll(this)
+//            this.addAll(this)
+//            this.addAll(this)
         }
 
-        Looper.myQueue().addIdleHandler {
-            tipViewBuilder = TipViewBuilder.
-                    Companion.
-                    make(this,"添加后有月、季度、年、永久等多个付费档供成员选择",button3)
-                    .addRule(RelativeLayout.ABOVE)
-                    .textColor(Color.WHITE)
-                    .backGroundColor(Color.BLUE)
-                    .apply {
-                        marginTop = dip2px(12f)
-                         padding =  ctx.dip2px(10f).toFloat()
-                         verticalPadding = ctx.dip2px(2f).toFloat()
-                    }
-                    .show()
-            false
-        }
-
-
-
-
+        mAdapter = CustomAdapter(userList,this)
+        recyclerView1.adapter = mAdapter
+        recyclerView1.layoutManager = LinearLayoutManager(this)
+        recyclerView1.addItemDecoration(object :  RecyclerView.ItemDecoration(){
+            override fun getItemOffsets(outRect: Rect?, view: View?, parent: RecyclerView?, state: RecyclerView.State?) {
+                super.getItemOffsets(outRect, view, parent, state)
+                outRect?.set(12,5,12,5)
+            }
+        })
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        tipViewBuilder?.dismiss()
+    override fun onItemClick(position: Int, view: View) {
+        val target = mAdapter.userList[position].third
+        val intent = Intent(this,target)
+        startActivity(intent)
+//        Toast.makeText(this,"点击了 $position 以及View的id 是 ${view.id}",Toast.LENGTH_SHORT).show()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
 }

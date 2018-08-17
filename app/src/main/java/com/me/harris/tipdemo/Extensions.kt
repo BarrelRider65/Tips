@@ -1,6 +1,9 @@
 package com.me.harris.tipdemo
 
 import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 
 
 /**
@@ -15,3 +18,7 @@ fun Context.dip2px(dpValue: Float): Int {
 fun Context?.screenWidth() =this?.resources?.displayMetrics?.widthPixels?:0
 
 fun Context?.screenHeight() = this?.resources?.displayMetrics?.heightPixels?:0
+
+fun ViewGroup.inflate(layoutId:Int): View {
+    return LayoutInflater.from(context).inflate(layoutId,this,false)
+}

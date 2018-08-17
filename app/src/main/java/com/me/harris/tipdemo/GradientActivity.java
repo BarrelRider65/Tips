@@ -1,6 +1,7 @@
 package com.me.harris.tipdemo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,17 +12,26 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ReplacementSpan;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.me.harris.tipdemo.widget.EmulatorDetector;
+
+import java.util.logging.Logger;
 
 public class GradientActivity extends AppCompatActivity {
 
@@ -41,10 +51,34 @@ public class GradientActivity extends AppCompatActivity {
         mTextView = new TextView(this);
         mTextView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         relativeLayout.addView(mTextView);
-        test();
+//        test();
+
+        testEmulator();
+
+        mTextView.postDelayed(() -> {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                Intent intent  = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        .putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                startActivity(intent);
+            }
+        }, 1_000);
+
+
+
 
     }
 
+  
+
+    private void testEmulator() {
+        boolean isEmulator = EmulatorDetector.isEmulator();
+        String str = EmulatorDetector.getDeviceListing();
+        Log.e("TAG","是不是模拟器"+isEmulator);
+        Log.e("TAG",str);
+        EmulatorDetector.logcat();
+
+    }
 
 
     private void test(){
@@ -59,19 +93,21 @@ public class GradientActivity extends AppCompatActivity {
         spanString.setSpan(new RadiusGradientBackgroundSpan(colors,this),start,end,Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         mTextView.setText(spanString);
 
-        findViewById(R.id.mbtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String content = getString(R.string.sample_text2);
-                SpannableString  spanString = new SpannableString(content);
-                int[] colors = {
-                        Color.parseColor("#ffb4b5"), Color.parseColor("#f96264")
-                };
-                spanString.setSpan(new RadiusGradientBackgroundSpan(colors,GradientActivity.this),0,6,Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-                mTextView.setText(spanString);
-            }
-        });
-
+        Button button =  findViewById(R.id.mbtn);
+        if (button!=null){
+            findViewById(R.id.mbtn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String content = getString(R.string.sample_text2);
+                    SpannableString  spanString = new SpannableString(content);
+                    int[] colors = {
+                            Color.parseColor("#ffb4b5"), Color.parseColor("#f96264")
+                    };
+                    spanString.setSpan(new RadiusGradientBackgroundSpan(colors,GradientActivity.this),0,6,Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                    mTextView.setText(spanString);
+                }
+            });
+        }
     }
 
 
@@ -193,6 +229,7 @@ public class GradientActivity extends AppCompatActivity {
 
 
     }
+
 
 
 //    private void drawRoundRect(float left, float top, float right, float bottom, Canvas canvas,int radius,Paint onlinePaint) {
