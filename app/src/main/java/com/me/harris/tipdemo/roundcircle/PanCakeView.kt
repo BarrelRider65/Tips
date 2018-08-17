@@ -30,6 +30,7 @@ class PanCakeView @JvmOverloads constructor(
 
     var startAngle = 0f //顺时针画圆弧开始的角度
     var sweepAngle = 60f //默认第一个圆弧是60度
+    val degreeGap = 5f//不同圆弧之间的间隔，默认隔开5度
 
     var firstArchColor = Color.parseColor("#29AB91")//从startAngle开始，第一个圆弧的颜色
     var secondArchColor = Color.parseColor("#F05A4A")//第二个圆弧的颜色
@@ -66,23 +67,39 @@ class PanCakeView @JvmOverloads constructor(
 
 
 
-        //画外部的圆
+        //画大的那部分圆
         path.addCircle(centerX,centerY,outterRadius,Path.Direction.CW)
         path.close()
         canvas?.drawPath(path,paint)
         path.reset()
 
-        //画绿色的圆环
+        // 画一个角度比小的那部分大一点的白色的饼
 
+        paint.color = Color.WHITE
+        val sweepAngle_1 = sweepAngle+degreeGap*2
+        val secondRadius_1 = outterRadius+offset/2
+        val startX_1 = centerX-secondRadius_1*Math.sin((sweepAngle_1/2)*Math.PI/180)
+        val startY_1 = centerY-secondRadius_1*Math.cos((sweepAngle_1/2)*Math.PI/180)
+        val endX_1 = centerX+secondRadius_1*Math.sin((sweepAngle_1/2)*Math.PI/180)
+        val endY_1 = startY_1
+        path.moveTo(centerX,centerY)
+        path.lineTo(startX_1.toFloat(),startY_1.toFloat())
+        path.lineTo(endX_1.toFloat(), endY_1.toFloat())
+        path.close()
+        val recf2 = RectF(centerX-secondRadius_1,centerY-secondRadius_1,
+                centerX+secondRadius_1,centerY+secondRadius_1)
+        path.addArc(recf2,-90f-(sweepAngle_1/2), sweepAngle_1)
+        canvas?.drawPath(path,paint)
+        path.reset()
+
+
+        //画小的部分
         paint.color = secondArchColor
-        val secondRadius = outterRadius+offset
+        val secondRadius = outterRadius+offset/2
         val startX = centerX-secondRadius*Math.sin((sweepAngle/2)*Math.PI/180)
         val startY = centerY-secondRadius*Math.cos((sweepAngle/2)*Math.PI/180)
-
-
         val endX = centerX+secondRadius*Math.sin((sweepAngle/2)*Math.PI/180)
         val endY = startY
-
         path.moveTo(centerX,centerY)
         path.lineTo(startX.toFloat(),startY.toFloat())
         path.lineTo(endX.toFloat(), endY.toFloat())
@@ -100,6 +117,8 @@ class PanCakeView @JvmOverloads constructor(
         path.close()
         canvas?.drawPath(path,paint)
         path.reset()
+
+
 
 
 
