@@ -89,7 +89,7 @@ class PanCakeView @JvmOverloads constructor(
         path.close()
         val recf = RectF(centerX-secondRadius,centerY-secondRadius,
                 centerX+secondRadius,centerY+secondRadius)
-        path.addArc(recf,-90f,sweepAngle.toFloat())
+        path.addArc(recf,-90f-(sweepAngle/2), sweepAngle)
         canvas?.drawPath(path,paint)
         path.reset()
 
