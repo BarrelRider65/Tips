@@ -24,8 +24,8 @@ class RoundCircleActivity :AppCompatActivity(){
 
 
 
-        pancake.sweepAngle = 0.2f
-        decorateCircle()
+        pancake.sweepAngle = 0f
+//        decorateCircle()
 
     }
 

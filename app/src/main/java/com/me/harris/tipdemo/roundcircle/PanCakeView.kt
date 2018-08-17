@@ -38,7 +38,7 @@ class PanCakeView @JvmOverloads constructor(
     val offset = 30f//伸出的距离
 
     var startAngle = 0f //顺时针画圆弧开始的角度
-    var sweepAngle = 4f
+    var sweepAngle = 0f
     // 这里要注意一点，假如上面的圆弧的角度超出了180度，那么底部的圆弧就要伸出来
 
     var firstArchColor = Color.parseColor("#02b388")//从startAngle开始，第一个圆弧的颜色
