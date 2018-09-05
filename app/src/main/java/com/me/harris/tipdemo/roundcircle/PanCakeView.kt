@@ -5,7 +5,7 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import android.util.TypedValue
-
+import java.text.DecimalFormat
 
 
 class PanCakeView @JvmOverloads constructor(
@@ -23,8 +23,8 @@ class PanCakeView @JvmOverloads constructor(
     var centerX = 0f
     var centerY = 0f
 
-    val firstLine = "1-BitMEX"
-    val secondLine = "27.77%"
+    var firstLine = "火币全球站"
+    var secondLine = "27.77%"
 
 
 
@@ -38,7 +38,7 @@ class PanCakeView @JvmOverloads constructor(
     val offset = 30f//伸出的距离
 
     var startAngle = 0f //顺时针画圆弧开始的角度
-    var sweepAngle = 0f
+    var sweepAngle = 60f
     // 这里要注意一点，假如上面的圆弧的角度超出了180度，那么底部的圆弧就要伸出来
 
     var firstArchColor = Color.parseColor("#02b388")//从startAngle开始，第一个圆弧的颜色
@@ -143,6 +143,10 @@ class PanCakeView @JvmOverloads constructor(
 //        //画左侧的横线
 //        path.moveTo(centerX,centerY)
 //        path.lineTo()
+        val ratio:Float = 1.2f*firstLineWidth/(innerRadius*2)
+        textPaint.textSize = txtSize/ratio
+
+
         canvas?.drawText(firstLine, (width/2).toFloat(),centerY-firstLineHeight,textPaint)
         textPaint.typeface = Typeface.DEFAULT_BOLD
         textPaint.textSize = txtSize*1.2f
@@ -236,4 +240,20 @@ class PanCakeView @JvmOverloads constructor(
         this.sweepAngle = newAngle
         postInvalidate()
     }
+
+
+    private val formatter :DecimalFormat by lazy {
+       DecimalFormat("##0.00")
+   }
+
+    fun updateData(percentage: Float,name:String){
+        if (percentage in 0.0f..1.0f){
+            this.sweepAngle = 360f*percentage
+            this.firstLine = name
+            this.secondLine = formatter.format(percentage*100)+"%"
+            postInvalidate()
+        }
+    }
+
+
 }

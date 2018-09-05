@@ -22,9 +22,8 @@ class RoundCircleActivity :AppCompatActivity(){
         pancake = findViewById(R.id.circleView)
 
 
-
-
-        pancake.sweepAngle = 0f
+//        pancake.firstLine = ""
+        pancake.updateData(0f,"")
 //        decorateCircle()
 
     }
@@ -35,10 +34,12 @@ class RoundCircleActivity :AppCompatActivity(){
         decorateCircle()
     }
 
+    var lastPercentage = 0.2232f
+
     private fun decorateCircle() {
-        pancake.sweepAngle+=1f
-        pancake.postInvalidate()
-        if (pancake.sweepAngle<=360){
+        lastPercentage+=0.003123f
+        pancake.updateData(lastPercentage,"火币交易所")
+        if (lastPercentage<=1f){
             pancake.postDelayed(runnable,20)
         }
     }

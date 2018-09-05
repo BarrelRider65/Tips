@@ -11,6 +11,7 @@ import android.view.View
 import com.me.harris.tipdemo.`interface`.ItemClickListener
 import com.me.harris.tipdemo.adapter.CustomAdapter
 import com.me.harris.tipdemo.roundcircle.RoundCircleActivity
+import com.me.harris.tipdemo.shimmer.ShimmerActivity
 import kotlinx.android.synthetic.main.activity_recycler_view.*
 
 class MainActivity :AppCompatActivity(), ItemClickListener {
@@ -31,7 +32,9 @@ class MainActivity :AppCompatActivity(), ItemClickListener {
                 Triple("GlideSampleActivity",2,GlideSampleActivity::class.java),
                 Triple("ThirdActivity",3,ThirdActivity::class.java),
                 Triple("RoundCorner",4,ImageviewCornerActivity::class.java),
-                Triple("RoundCircle",5, RoundCircleActivity::class.java)
+                Triple("RoundCircle",5, RoundCircleActivity::class.java),
+                Triple("Gradient",6, GradientRotate::class.java),
+                Triple("Shimmer",7, ShimmerActivity::class.java)
 //                Triple("ClipPath",6,CustomDrawingActivity::class.java),
 //                Triple("Locale",6,UpdatingConfigActivity::class.java)
 
