@@ -27,7 +27,7 @@ public class ShimmerActivity extends AppCompatActivity {
                 .angle(20)
                 .frozen(false)
                 .duration(1200)
-                .count(10)
+                .count(100)
                 .load(R.layout.item_skeleton_news)
                 .show(); //default count is 10
         recyclerView.postDelayed(skeletonScreen::hide, 3000);

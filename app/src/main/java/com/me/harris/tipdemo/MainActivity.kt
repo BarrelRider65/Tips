@@ -10,7 +10,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.me.harris.tipdemo.`interface`.ItemClickListener
 import com.me.harris.tipdemo.adapter.CustomAdapter
+import com.me.harris.tipdemo.addview.AddViewLinearLayoutActivity
+import com.me.harris.tipdemo.maxlines.MaxLinesActivity
 import com.me.harris.tipdemo.roundcircle.RoundCircleActivity
+import com.me.harris.tipdemo.searchshape.SearchBarActivity
 import com.me.harris.tipdemo.shimmer.ShimmerActivity
 import kotlinx.android.synthetic.main.activity_recycler_view.*
 
@@ -34,7 +37,10 @@ class MainActivity :AppCompatActivity(), ItemClickListener {
                 Triple("RoundCorner",4,ImageviewCornerActivity::class.java),
                 Triple("RoundCircle",5, RoundCircleActivity::class.java),
                 Triple("Gradient",6, GradientRotate::class.java),
-                Triple("Shimmer",7, ShimmerActivity::class.java)
+                Triple("Shimmer",7, ShimmerActivity::class.java),
+                Triple("Shape",8, SearchBarActivity::class.java),
+                Triple("addView",9, AddViewLinearLayoutActivity::class.java),
+                Triple("MaxLine",10, MaxLinesActivity::class.java)
 //                Triple("ClipPath",6,CustomDrawingActivity::class.java),
 //                Triple("Locale",6,UpdatingConfigActivity::class.java)
 
